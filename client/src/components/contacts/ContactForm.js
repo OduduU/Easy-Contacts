@@ -6,15 +6,8 @@ function ContactForm() {
 	const contactContext = useContext(ContactContext);
 	const { addContact, updateContact, current, clearCurrent } = contactContext;
 
-	const [contact, setContact] = useState({
-		name: "",
-		email: "",
-		phone: "",
-		type: "personal"
-	});
-
 	useEffect(() => {
-		if (current) {
+		if (current !== null) {
 			setContact(current);
 		} else {
 			setContact({
@@ -26,6 +19,12 @@ function ContactForm() {
 		}
 	}, [current, contactContext])
 
+	const [contact, setContact] = useState({
+		name: "",
+		email: "",
+		phone: "",
+		type: "personal"
+	});
 
     const { name, email, phone, type } = contact;
     
@@ -33,10 +32,10 @@ function ContactForm() {
 
     const onSubmit = e => {
 		e.preventDefault();
-		if (current) {
-			updateContact(contact);
-		} else {
+		if (current === null) {
 			addContact(contact);
+		} else {
+			updateContact(contact);
 		}
         clearAll()
 	};
@@ -54,6 +53,7 @@ function ContactForm() {
 				name="name"
 				value={name}
 				onChange={onChange}
+				required
 			/>
 			<input
 				type="email"
@@ -61,6 +61,7 @@ function ContactForm() {
 				name="email"
 				value={email}
 				onChange={onChange}
+				required
 			/>
 			<input
 				type="text"
@@ -68,6 +69,7 @@ function ContactForm() {
 				name="phone"
 				value={phone}
 				onChange={onChange}
+				required
 			/>
 			<h5>Contact Type</h5>
 			<input

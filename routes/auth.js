@@ -4,22 +4,20 @@ const { check, validationResult } = require("express-validator");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const auth = require('../middleware/auth');
+const auth = require("../middleware/auth");
 
 // @route   GET api/auth
 // @desc    Get logged in user
 // @access  Private
 router.get("/", auth, async (req, res) => {
 	try {
-		const user = await User.findById(req.userId).select('-password');
+		const user = await User.findById(req.userId.id).select("-password");
 		res.json(user);
 	} catch (error) {
-		console.log(error.message);
 		res.status(500).json({
-			msg: 'Server Error'
+			msg: "Server Error"
 		});
 	}
-	res.json({ msg: "Get logged in user" });
 });
 
 // @route   POST api/auth
@@ -31,7 +29,7 @@ router.post(
 		check("email", "Please include a valid email").isEmail(),
 		check("password", "Password is required").exists()
 	],
-	async (req, res) => {		
+	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
@@ -42,25 +40,25 @@ router.post(
 		try {
 			let user = await User.findOne({ email });
 
-			if (!user) return res.status(400).json({ msg: 'Invalid Credentials' });
+			if (!user) return res.status(400).json({ msg: "Invalid Credentials" });
 
 			const isMatch = await bcrypt.compare(password, user.password);
 
-			if (!isMatch) return res.status(400).json({ msg: 'Invalid Credentials' });
-			
+			if (!isMatch) return res.status(400).json({ msg: "Invalid Credentials" });
+
 			const payload = {
-				id: user.id
+				id: user._id
 			};
 
 			const token = jwt.sign(payload, process.env.jwtSecret, {
 				expiresIn: 360000
 			});
 
-			res.status(200).json(token);
+			res.status(201).json({token});
 		} catch (error) {
 			console.error(error.message);
 			res.status(500).json({
-				msg: 'Server Error'
+				msg: "Server Error"
 			});
 		}
 	}
