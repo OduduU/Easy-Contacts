@@ -9,7 +9,8 @@ import {
 	CLEAR_FILTER,
 	DELETE_SEARCH_CONTACT,
 	CONTACT_ERROR,
-	CLEAR_CONTACTS
+	CLEAR_CONTACTS,
+	UPDATE_SEARCH_CONTACT
 } from "../types";
 
 export default (state, action) => {
@@ -31,6 +32,17 @@ export default (state, action) => {
 				...state,
 				contacts: state.contacts.map(contact =>
 					contact._id === action.payload._id ? action.payload : contact
+				),
+				loading: false
+			};
+		case UPDATE_SEARCH_CONTACT:
+			return {
+				...state,
+				contacts: state.contacts.map(contact =>
+					contact._id === action.payload._id ? action.payload : contact
+				),
+				filtered: state.filtered.map(filter =>
+					filter._id === action.payload._id ? action.payload : filter
 				),
 				loading: false
 			};

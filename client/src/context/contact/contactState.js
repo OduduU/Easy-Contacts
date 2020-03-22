@@ -14,7 +14,8 @@ import {
     CLEAR_FILTER,
     CLEAR_CONTACTS,
     DELETE_SEARCH_CONTACT,
-    CONTACT_ERROR
+    CONTACT_ERROR,
+    UPDATE_SEARCH_CONTACT
 } from '../types';
 
 const ContactState = props => {
@@ -97,10 +98,46 @@ const ContactState = props => {
     }
 
     // Delete Search Contact
-    const deleteSearchContact = id => {
-        dispatch({ type: DELETE_SEARCH_CONTACT, payload: id });
+    const deleteSearchContact = async id => {
 
-        clearCurrent();
+        const config = setAuthToken();
+
+        try {
+            await axios.delete(`/api/contacts/${id}`, config);
+
+
+            dispatch({ type: DELETE_SEARCH_CONTACT, payload: id });
+        } catch (err) {
+            dispatch({
+                type: CONTACT_ERROR,
+                payload: err.response.msg
+            })
+        }
+
+        // dispatch({ type: DELETE_SEARCH_CONTACT, payload: id });
+
+        // clearCurrent();
+    }
+
+    // Update Search Contact
+    const updateSearchContact = async contact => {
+
+        const config = setAuthToken();
+
+        try {
+            const res = await axios.put(`/api/contacts/${contact._id}`, contact, config);
+
+            dispatch({
+                type: UPDATE_SEARCH_CONTACT,
+                payload: res.data
+            })
+        } catch (err) {    
+            dispatch({ type: CONTACT_ERROR, payload: err.response.msg });
+        }
+
+        // dispatch({ type: DELETE_SEARCH_CONTACT, payload: id });
+
+        // clearCurrent();
     }
 
     // Set Current Contact
@@ -139,7 +176,8 @@ const ContactState = props => {
                 filterContacts,
                 clearFilter,
                 getContacts,
-                clearContacts
+                clearContacts,
+                updateSearchContact
             }}
         >
             {props.children}

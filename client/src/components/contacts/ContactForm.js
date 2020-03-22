@@ -4,7 +4,7 @@ import ContactContext from '../../context/contact/contactContext';
 
 function ContactForm() {
 	const contactContext = useContext(ContactContext);
-	const { addContact, updateContact, current, clearCurrent } = contactContext;
+	const { addContact, updateContact, filtered, updateSearchContact, current, clearCurrent } = contactContext;
 
 	useEffect(() => {
 		if (current !== null) {
@@ -17,6 +17,8 @@ function ContactForm() {
 				type: "personal"
 			});
 		}
+
+		// eslint-disable-next-line
 	}, [current, contactContext])
 
 	const [contact, setContact] = useState({
@@ -35,6 +37,13 @@ function ContactForm() {
 		if (current === null) {
 			addContact(contact);
 		} else {
+			if (filtered) {
+				updateSearchContact(contact);
+				// clearCurrent();
+			} else {
+				updateContact(contact);
+				// clearCurrent();
+			}
 			updateContact(contact);
 		}
         clearAll()
